@@ -1,6 +1,7 @@
-import tkinter as tk
+import customtkinter as ctkapp
 import os
 import time
+import tkinter as tk
 from datetime import datetime, timedelta
 import subprocess
 
@@ -58,34 +59,26 @@ def search_recent_screenshot():
                         # Extract the timestamp from the filename
                         timestamp_str = parts[1] + ' ' + parts[2].split('.')[0]
                         timestamp = datetime.strptime(timestamp_str, '%Y-%m-%d %H%M%S')
-                        # print("The time stamp is", timestamp)
-                        # print("Time strap da shnu:" , timestamp_str)
-
-                        # print("Future what??",future_time)
-                        timenow = get_current_time()
-                        ffuture = add_seconds_to_time(timenow)
-                        # print("Current Time",timenow)
-                        # print("Future",ffuture)
-                        pasttime = sub_seconds_to_time(timenow)
-                        # print("The past time is:" ,pasttime)
 
                         # Check if the screenshot was taken within the time range
-                        if (timestamp_str >= pasttime) and (timestamp_str <= ffuture):
-                            # print(f"it says {timenow} <= {ffuture}")
+                        if (timestamp_str >= sub_seconds_to_time(get_current_time())) and (timestamp_str <= add_seconds_to_time(get_current_time())):
                             found_screenshot = os.path.join(screenshots_dir, file)
                             break
                     except ValueError:
                         pass
 
         if found_screenshot:
-            result_label.config(text="Found recent screenshot:\n" + found_screenshot)
-            # print(found_screenshot)
+
+            result_label.configure(text= f"Found recent screenshot:\n {found_screenshot}")
+
             return found_screenshot
         else:
-            result_label.config(text="No recent screenshot found in default screenshots directory.")
+            result_label.text = "No recent screenshot found in default screenshots directory."
+
             return None
     else:
-        result_label.config(text="Default screenshots directory not found.")
+        result_label.text = "No recent screenshot found in default screenshots directory."
+
         return None
 
 
@@ -106,24 +99,27 @@ def take_screenshot_and_run_function():
             snipping_tool_process.kill()
             break
 
-    # Testing killing the process
-
     # Wait for the Snipping Tool process to finish
     snipping_tool_process.wait()
 
 
 # Create the main application window
-app = tk.Tk()
+app = ctkapp.CTk()
+app.geometry("500x200")
 app.title("Snipping Tool App")
 
 # Create a label to display the search result
-result_label = tk.Label(app, text="")
-result_label.pack(padx=20, pady=10)
+print("Ran once")
+result_label = ctkapp.CTkLabel(master=app, text="Searching for screensShot")
+# Use place for
+# Use place for centering the text
+result_label.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-# Create a button to trigger taking a screenshot and running a function
-snip_button = tk.Button(app, text="Snip", command=take_screenshot_and_run_function)
+# Create a button to trigger taking a screenshot and running the function
+snip_button = ctkapp.CTkButton(
+    master=app, text="Take Screenshot", command=take_screenshot_and_run_function
+)
 snip_button.pack(padx=20, pady=10)
 
-# Run the application
+# Run the application loop
 app.mainloop()
-
